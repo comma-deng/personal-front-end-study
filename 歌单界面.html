@@ -1,0 +1,187 @@
+ <html>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ 
+ <script src="http://cdn.bootcss.com/jquery/3.1.0/jquery.js"></script>
+ <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="http://cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+ <script type="text/javascript" src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+ 
+ <script type="text/javascript">
+ /*var  musicList =[
+ {"musicName":"json",artist:{"name":"comma"}}
+ ];*/
+ 
+ window.onload=initialize;
+ 
+ var  listList = [
+ {'name':'我喜欢的音乐'},
+ ]
+ 
+ 
+ 
+ //params: 字典
+ //method : get 或 post
+ //contentType: json 
+ function sendAjaxRequest(url, params, callBack,method,contentType,headers) {
+	var data='';
+	if(contentType=='json'){
+			contentType='application/json; charset=utf-8';
+			data=JSON.stringify(params);
+	}else{
+			contentType="application/x-www-form-urlencoded";
+			data=params
+	}
+    $.ajax({
+        //type: 'POST',
+        type: method,
+        dataType: 'json',
+        url: url,
+		contentType:contentType,
+        //contentType: "application/json; charset=utf-8",     //参数为json
+        // contentType:"application/x-www-form-urlencoded", //参数为 key/value 格式
+        //data: JSON.stringify(params),
+        // data:params,
+		data:data,
+		headers:headers,
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
+        success: function(data) {
+            if (data != null&&callBack!=null) {
+                callBack(data.data);
+            } else {
+                alert('error!');
+            }
+        },
+        // error:function(){
+        // 	var data={
+        // 		'userName':'yuan',
+        // 		"movieName":"movie one",
+        // 		"session":1,
+        // 		"seatNum":20
+        // 	};
+        // 	handleResult(data);
+        // }
+    });
+}
+
+ function  loadMusic(musicList){
+   musictBody = document.getElementById("musicBody");
+   var str = "";
+   for(var i=0;i<musicList.length;i++)
+    {
+     str = str + "<tr onmouseover=\"musicMouseOver(" + (i+1) +",2)\" " +"onmouseleave=\"musicMouseLeave(" +(i+1) +",2)\">";
+	 str = str + "<td><a href=\"#\" ><p><i class=\"glyphicon  glyphicon-play-circle\"></i></p></a></td>";
+	 str = str +"<td><a href =\"#\">"+musicList[i].musicName+"</a></td>";
+	 str = str +"<td>"+'00:00'+"</td>";
+	 str = str +"<td>"+musicList[i].artist.name+"</td>";
+	 str = str +"<td>"+'null'+"</td>";
+	 str = str + "</tr>";
+    }
+	musictBody.innerHTML = str;
+ }
+ 
+ function loadList()
+ {
+   listBody = document.getElementById("listBody");
+   var str="";
+   for(var i=0;i<listList.length;i++)
+   {
+   str = str + "<tr onmouseover=\"listMouseOver(" + (i+1) +",1)\" " +"onmouseleave=\"listMouseLeave(" +(i+1) +",1)\">";
+   str = str +"<td>" + listList[i].name + "</td>";
+   str = str +"<td> </td>"; //加一行空的，用来显示操作
+   str = str + "</tr>";
+   }
+   listBody.innerHTML = str;
+ }
+ function  initialize()
+ {
+   listUrl = "http://114.215.97.158/bbtmusic/music/favorites/all";
+   var headers = {
+     'token':1,
+   }
+   var param={
+		page : 1,
+		size :5,
+   }
+   
+  sendAjaxRequest(listUrl, param, loadMusic,'GET','FORM',headers);
+   loadList();
+ //  loadMusic();
+   
+ }
+ 
+ function musicMouseOver(row,col)
+ {
+     str = "<td>"+
+	         "<a href=\"#\" ><p><i class=\" glyphicon glyphicon-download-alt\"></i></p></a></td>" +
+	         "<a href=\"#\" ><p><i class=\"glyphicon  glyphicon-edit\"></i></p></a> " +
+			 "<a href=\"#\" ><p><i class=\"glyphicon  glyphicon-trash\"></i></p></a>"+
+			 "</td>";
+	        
+     document.getElementById("musicTable").rows[row].cells[col].innerHTML =str;
+ } 
+ function musicMouseLeave(row,col)
+ {
+   str = "<td>"+musicList[row -1].time+"</td>";  //为何要减一，因为musicList第零行是标题栏
+   document.getElementById("musicTable").rows[row].cells[col].innerHTML = str;
+ }
+ 
+ function  listMouseOver(row,col)
+ {
+   str = "<td>" +
+           "<a href=\"#\" ><p><i class=\"glyphicon  glyphicon-edit\"></i></p></a>" +
+		   "<a href=\"#\" ><p><i class=\"glyphicon  glyphicon-trash\"></i></p></a>"+
+		   "</td>";
+		   document.getElementById("listTable").rows[row].cells[col].innerHTML =str;
+ }
+ function listMouseLeave(row,col)
+ {
+   document.getElementById("listTable").rows[row].cells[col].innerHTML ="";
+ }
+ 
+
+ </script>
+ 
+<div class="container">
+<div class="input-group">
+    <input type="text" class="form-control input-lg"><span class="input-group-btn btn btn-primary">搜索</span>
+</div>
+  <div class = "row">
+    <div class="col-xs-2">
+	  <table class="table table-hover" id ="listTable">
+	    <caption></caption>
+		<thead>
+          <tr>
+            <th>歌单</th>
+			<th> <th>  <!--用来显示删除和编辑的图标-->
+		  </tr>
+		 </thead>
+	    <tbody id ="listBody">
+		</tbody>
+	  </table>
+	</div>
+	
+	<div class = "col-xs-10">
+      <table class="table table-striped" id ="musicTable">
+        <caption></caption>
+        <thead>
+          <tr>
+            <th></th>
+            <th>歌曲标题</th>
+            <th>时长</th>
+	        <th>歌手</th>
+	        <th>专辑</th>
+          </tr>
+        </thead>
+        <tbody id ="musicBody">
+        </tbody>
+      </table>
+    </div>
+	
+  </div>
+</div>
+
+ 
+ </html>

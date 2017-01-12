@@ -1,0 +1,20 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type = "text/javascript">
+ window.onload = aaa;
+function aaa(){
+var str = "xx\nBlog, 2\nSjolzy.cn, 3";
+var uri = 'data:text/csv;charset=utf-8,' + str;
+
+var downloadLink = document.createElement("a");
+downloadLink.href = uri;
+downloadLink.download = "export.csv";
+
+document.body.appendChild(downloadLink);
+downloadLink.click();
+}
+</script>
+
+<p>sadlaskdmasmdas</p>
+
+</html>
